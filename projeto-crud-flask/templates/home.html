@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bem-Vindo</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+            color: #333;
+        }
+
+        p {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        a {
+            color: #007bff;
+            text-align: center;
+            display: block;
+            margin-top: 20px;
+            text-decoration: underline;
+        }
+
+        a:hover {
+            color: #ccc;
+            text-decoration: underline;
+        }
+
+        div  {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table{
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bem-vindo ao mundo de loucuras</h1>
+            {% if name %}
+                <p>Ola, {{name}}. Parabens por logar</p>
+                <a href="/deslogar">Deslogar</a>
+            {% else %}
+                <p>Voce nao esta logado, estranho... Por favor clique aqui para<a href="login">Logar</a></p>
+            {% endif %}
+    </div>
+
+    <h1>Dashboard - Lista de Logins</h1>
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Acao</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for login in logins %}
+                <tr>
+                    <td>{{ login.name }}</td>
+                    <td>{{ login.email }}</td>
+                    <td> 
+                        <button class="edit-btn" data-id="{{ login.id }}">Editar</button>
+                        <button class="delete-btn" data-id="{{ login.id }}" data-name="{{ login.name }}" data-email="{{ login.email }}">Excluir</button>
+
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+       
+<script>
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.getAttribute('data-id');
+            const userName = this.getAttribute('data-name');
+            const userEmail = this.getAttribute('data-email');
+            if (confirm(`Tem certeza que deseja excluir o usuario ${userName} (${userEmail})?`)) {
+                fetch('/delete_user', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: userName,
+                        email: userEmail
+                    })
+                }).then(response => {
+                    if (response.ok) {
+                        location.reload(); 
+                    } else {
+                        console.error('Erro ao excluir usuario');
+                    }
+                }).catch(error => {
+                    console.error('Erro ao excluir usuario:', error);
+                });
+            }
+        });
+    });
+
+
+
+    document.querySelectorAll('.edit-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.getAttribute('data-id');
+            const newName = prompt('Novo nome:');
+            const newEmail = prompt('Novo email:');
+            const newPassword = prompt('Nova senha:');
+
+            if (newName !== null && newEmail !== null && newPassword !== null) {
+                fetch(`/edit_user/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: newName,
+                        email: newEmail,
+                        password: newPassword
+                    })
+                }).then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        console.error('Erro ao editar usuario');
+                    }
+                }).catch(error => {
+                    console.error('Erro ao editar usuario:', error);
+                });
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
