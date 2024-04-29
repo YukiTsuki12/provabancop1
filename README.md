@@ -20,6 +20,7 @@ Link do vídeo: [Meu vídeo](https://youtu.be/AMSlir-3xOA)
 * MongoDB
 * Python
 * Flask
+* Jinja2
 
 
 ### Funcionalidades:
